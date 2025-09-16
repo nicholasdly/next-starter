@@ -40,7 +40,6 @@ If at any point you want to delete a migration file, use `npm run db:drop`. **Th
 
 Preferably, migrations will run automatically when a pull request is merged. This can be done using GitHub Actions. Depending on how you are hosting your application and database, there may quite a few moving parts to this—I recommend taking the time to research this yourself.
 
-
 ### Authentication
 
 The included user authentication is a minimal username-password implementation that is not intended for production use.
