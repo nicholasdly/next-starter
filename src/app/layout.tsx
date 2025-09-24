@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
+import { Toaster } from "@/components/ui/sonner";
+
 export const viewport: Viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari
 };
@@ -18,7 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <Toaster theme="light" richColors />
+      </body>
     </html>
   );
 }
