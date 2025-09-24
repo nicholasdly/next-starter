@@ -1,14 +1,15 @@
 import { eq } from "drizzle-orm";
+
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { hashPassword } from "@/lib/auth/passwords";
-import { registerFormSchema } from "@/lib/auth/validation";
 import {
   createSession,
   generateSessionToken,
   getCurrentSession,
   setSessionTokenCookie,
 } from "@/lib/auth/sessions";
+import { registerFormSchema } from "@/lib/auth/validation";
 
 export async function POST(request: Request) {
   // TODO: Implement rate limiting
@@ -28,7 +29,8 @@ export async function POST(request: Request) {
     .where(eq(users.username, username))
     .limit(1);
 
-  if (existingUser?.username === username) return new Response(null, { status: 409 });
+  if (existingUser?.username === username)
+    return new Response(null, { status: 409 });
 
   const passwordHash = await hashPassword(password);
   const [user] = await db

@@ -16,7 +16,9 @@ import {
 // Make sure this matches the maximum cookie age in the middleware.
 const sessionDuration = 1000 * 60 * 60 * 24 * 7; // 7 days in milliseconds
 
-export type SanitizedUser = Omit<User, "passwordHash"> & { readonly __brand: "SanitizedUser" };
+export type SanitizedUser = Omit<User, "passwordHash"> & {
+  readonly __brand: "SanitizedUser";
+};
 
 export type SessionValidationResult =
   | { session: Session; user: SanitizedUser }
@@ -49,7 +51,7 @@ export async function validateSessionToken(
 ): Promise<SessionValidationResult> {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 
-  return await db.transaction(async (tx) => {  
+  return await db.transaction(async (tx) => {
     const [data] = await tx
       .select({
         user: {
@@ -63,17 +65,17 @@ export async function validateSessionToken(
       .innerJoin(users, eq(sessions.userId, users.id))
       .where(eq(sessions.id, sessionId))
       .limit(1);
-  
+
     const user = data?.user as SanitizedUser | undefined;
     const session = data?.session;
-  
+
     if (!user || !session) return { session: null, user: null };
-  
+
     if (Date.now() >= session.expiresAt.getTime()) {
       await tx.delete(sessions).where(eq(sessions.id, session.id));
       return { session: null, user: null };
     }
-  
+
     // Extends the session expiration when it's near expiration.
     if (Date.now() >= session.expiresAt.getTime() - sessionDuration / 2) {
       session.expiresAt = new Date(Date.now() + sessionDuration);
@@ -82,7 +84,7 @@ export async function validateSessionToken(
         .set({ expiresAt: session.expiresAt })
         .where(eq(sessions.id, session.id));
     }
-  
+
     return { session, user };
   });
 }
